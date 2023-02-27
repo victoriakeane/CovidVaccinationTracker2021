@@ -1,0 +1,133 @@
+* {
+    margin: 0;
+}
+/* My overall goal for the CSS was to split the data provided on the page into cards so as to make everything presented easily digestible to the viewer. I considered images but felt they would hinder the presentation by making it look clunky. The pages' emphasis on displaying lots of data meant to me that dividing it into cards was the natural solution to improving readability */ 
+header { 
+    background-color: #ffed01;
+    height: 20vh;
+    padding: 5vh;
+    text-align: center;
+    
+}
+body {
+    font-family: 'Helvetica';
+}
+
+nav ul li{ 
+    font-family: 'Helvetica-bold';
+    display: inline;
+    padding: 3vh;
+    line-height: 20vh;
+    font-size: clamp(2vh, 10vh);
+    padding: 7.5vh;
+}
+
+h1 {
+    line-height: 10vh;
+}
+
+h2 {
+    text-align: center;
+    line-height: 10vh;
+}
+
+h3 {
+    text-align: center;
+    line-height: 10vh; 
+}
+table {
+    margin-left: auto; 
+    margin-right: auto; 
+    border-color: darkgray;
+}
+
+th {
+    text-align: left; 
+    background-color: #fcbf56;
+    color: dimgrey;
+}
+
+td {
+    text-align: center; 
+    background-color: #c4b9a5;
+    
+}
+
+.vaxDisplay {
+    margin: 5vh;
+    padding: 5vh;
+    background-color: lightgrey;
+    border-radius: 15px;
+    font-size: clamp(3vh, 3vw, 6vh);
+}
+
+.vaxData {
+    line-height: 7vh;
+    background-color: #ffed01;
+    padding: 3vh;
+    border-radius: 12px;
+    margin: 2vh;
+}
+.weekData {
+    padding: 3vh;
+    border-radius: 12px;
+    background-color: lightyellow;
+    margin: 2vh;
+    line-height: 7vh;
+}
+
+.ageData {
+    padding:3vh;
+    background-color: lightyellow;
+    border-radius: 12px;
+    line-height: 7vh;
+    margin: 2vh;
+}
+
+.countyDisplay {
+    margin: 5vh;
+    padding:5vh;
+    line-height: 5vh;
+    background-color: lightgrey;
+    border-radius: 15px;
+    font-size: clamp(3vh, 3vw, 6vh);
+}
+
+.countyData {
+    font-size: clamp(3vh, 3vw, 6vh); 
+}
+.selectToDisplay {
+    background-color: lightyellow; 
+    margin: 2vh; 
+    padding: 3vh; 
+    border-radius: 12px;
+    
+}
+.highestCounty {
+    background-color: lightyellow; 
+    margin: 2vh; 
+    padding: 3vh; 
+    border-radius: 12px;
+    
+}
+.highestCovid {
+    background-color: lightyellow; 
+    margin: 2vh; 
+    padding: 3vh; 
+    border-radius: 12px;
+}
+.lowestCovid {
+    background-color: lightyellow; 
+    margin: 2vh; 
+    padding: 3vh; 
+    border-radius: 12px;
+}
+
+#highestCounty {
+    line-height: 10vh; 
+    text-align: center; 
+}
+#lowestCounty {
+    line-height: 10vh; 
+    text-align: center; 
+}

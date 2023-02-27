@@ -1,0 +1,275 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Ireland Covid Vaccination Data</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- following navbar was made using bootstrap following instructions from https://www.w3schools.com/bootstrap/bootstrap_navbar.asp -->
+<header>
+    <h1>COVID VACCINATION DATA IRELAND</h1> 
+</header> 
+    <!-- from tutorial https://www.youtube.com/watch?v=WZNG8UomjSI -->
+<div class="dataDisplay">
+        <!-- I found out about the handy week input here https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/week compatability is limited to chrome and edge -->
+
+   <div class="vaxDisplay">
+       <h1> Vaccination Data</h1>
+       <div class="vaxData">    
+            <div id="totalRecordedVax"></div>
+       </div>
+           <div class="weekData">
+                <h2> OVERVIEW BY WEEK </h2>
+                <div id="weekSelect">
+                <input id="inputWeek" placeholder="Enter Week">
+                <button id="weekSubmit" onclick="weeklyInfo()"> Submit </button>
+                </div>
+                <div id="totalVaxdByWeek"></div>
+                <div id="ModernaByWeek"></div>
+                <div id="PfizerByWeek"></div>
+                <div id="JanssenByWeek"></div>
+                <div id="AstraByWeek"></div>
+           </div>
+        <div class="ageData">
+            <h2>TOTAL VACCINATED BY AGE 2021</h2>
+            <input type ="checkbox" id="checkPercent" onclick="ageInfo()">
+            <label for="checkPercent"> Display As Percent</label><br>
+            <div id="10-19"></div>
+            <div id="20-29"></div>
+            <div id="30-39"></div>
+            <div id="40-49"></div>
+            <div id="50-59"></div>
+            <div id="60-69"></div>
+            <div id="70-79"></div>
+            <div id="80+"></div>
+        </div>
+    </div>
+    
+    <div class="countyDisplay">
+        <h1> County Statistics</h1>
+        <div class="countyData">
+            <div class="selectToDisplay"> 
+                <h2> 2021 CUMULATIVE COUNTY DATA</h2>
+                <p><b>Select Counties to Display Below</b></p>
+                <select id="countyDropdown" name="County"></select>
+                <select id="countyDropdown2" name="County"></select>
+                <select id="countyDropdown3" name="County"></select>
+                <button id="countySubmit" onclick="updateCounty()"> Press to Display </button>
+                <div id="tableDisplay"></div>
+                <div id="tableDisplay2"></div>
+                <div id="tableDisplay3"></div>
+            </div>
+            <div class="highestCovid">
+                <h3> County with Highest Covid Rate Overall</h3>
+                <div id="highestCounty"> </div>
+            </div>
+            <div class="lowestCovid">
+                <h3>County with Lowest Covid Rate Overall</h3>
+                <div id="lowestCounty"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+<script>
+var weeklyInfo;
+var ageInfo;
+var parsedWeekly;
+var curWeek;
+const weeklyXml = new XMLHttpRequest(),
+    url = "https://services-eu1.arcgis.com/z6bHNio59iTqqSUY/arcgis/rest/services/COVID19_Weekly_Vaccination_Figures/FeatureServer/0/query?where=1%3D1&outFields=ExtractDate,Week,TotalweeklyVaccines,Male,Female,NA,Moderna,Pfizer,Janssen,AstraZeneca,FullyCum_Age10to19,FullyCum_Age20to29,FullyCum_Age30to39,FullyCum_Age40to49,FullyCum_Age50to59,FullyCum_Age60to69,FullyCum_Age70to79,FullyCum_80_,FullyCum_NA,FullyPer_Age10to19,FullyPer_Age20to29,FullyPer_Age30to39,FullyPer_Age40to49,FullyPer_Age50to59,FullyPer_Age60to69,FullyPer_Age70to79,FullyPer_80_,FullyPer_NA&outSR=4326&f=json";
+
+weeklyXml.onreadystatechange = function() {
+    if (weeklyXml.readyState == 4  && weeklyXml.status == 200) {
+        console.log(weeklyXml.responseText);
+        parsedWeekly = JSON.parse(weeklyXml.responseText);
+        curWeek = parsedWeekly.features.length-1;
+        weeklyInfo();
+        ageInfo();       
+    }    
+};
+    
+weeklyXml.open('get', url, true);    
+weeklyXml.send();
+// I learned about parsing the JSON data from w3schools https://www.w3schools.com/xml/xml_http.asp and using the methods presented in lectures.    
+function weeklyInfo() {
+    var weeklyDataList = parsedWeekly.features;
+    var weekNum = parseInt(document.getElementById("inputWeek").value);
+    var totalVaxd = 0;
+    for (i=0; i < weeklyDataList.length; i++) {
+        totalVaxd += parseInt(weeklyDataList[i].attributes.TotalweeklyVaccines);
+        document.getElementById("totalRecordedVax").innerHTML="<b> Total Recorded Vaccinations 2021: </b> " + totalVaxd;
+    }
+
+    
+    if (isNaN(weekNum)) {
+        updateWeek(curWeek);
+    }
+    else if (weekNum > curWeek) {
+        alert("Enter week between 1 and " + curWeek + " of 2021");
+    }  
+    else {
+        updateWeek(weekNum);
+    }                                              
+}
+
+function updateWeek(weekNum) {
+    var weeklyDataList = parsedWeekly.features;
+    var numWeek = weeklyDataList[weekNum].attributes.TotalweeklyVaccines;
+    var numModerna = weeklyDataList[weekNum].attributes.Moderna;
+    var numPfizer = weeklyDataList[weekNum].attributes.Pfizer;
+    var numJanssen = weeklyDataList[weekNum].attributes.Janssen;
+    var numAstrazeneca = weeklyDataList[weekNum].attributes.AstraZeneca;
+    document.getElementById("totalVaxdByWeek").innerHTML ="<b> Total Vaccinated on Week </b> " + "<b>" + weekNum + "</b>" + ": " + numWeek;
+    document.getElementById("ModernaByWeek").innerHTML = "<b> Total Moderna Vaccinations: </b>" + numModerna;
+    document.getElementById("PfizerByWeek").innerHTML = "<b> Total Pfizer Vaccinations: </b>" + numPfizer;
+    document.getElementById("JanssenByWeek").innerHTML = "<b> Total Janssen Vaccinations: </b>" + numJanssen;
+    document.getElementById("AstraByWeek").innerHTML = "<b> Total AstraZeneca Vaccinations: </b> " + numAstrazeneca;
+}
+// I used to fixed to compartmentalise very long numbers as I felt it looked messy on the webpage. I learned about it from here https://www.w3schools.com/jsref/jsref_tofixed.asp
+function toPercent(decimal) {
+    return (parseFloat(decimal) * 100).toFixed(2); 
+}
+function ageInfo() {
+    var checkPercent = document.getElementById("checkPercent");
+    var weeklyDataList = parsedWeekly.features;
+    var age10Plus;
+    var age20Plus;
+    var age30Plus;
+    var age40Plus;
+    var age50Plus;
+    var age60Plus;
+    var age70Plus;
+    var age80Plus;
+// I figured out how to incorporate the checkbox to javascript with help from this link https://www.aspsnippets.com/Articles/Call-JavaScript-function-when-CheckBox-is-checked-or-unchecked.aspx
+    if (checkPercent.checked == true) {
+        age10Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age10to19) + "%";
+        age20Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age20to29) + "%";
+        age30Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age30to39) + "%";
+        age40Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age40to49) + "%";
+        age50Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age50to59) + "%";
+        age60Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age60to69) + "%";
+        age70Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_Age70to79) + "%";
+        age80Plus = toPercent(weeklyDataList[curWeek].attributes.FullyPer_80_) + "%";
+    } 
+    else {
+        // from my understanding of the data, the rate of population proportion of covid vases and the cases per 100,000 people that was outlined in the assignment details are the same thing. 
+        age10Plus = weeklyDataList[curWeek].attributes.FullyCum_Age10to19;
+        age20Plus = weeklyDataList[curWeek].attributes.FullyCum_Age20to29;
+        age30Plus = weeklyDataList[curWeek].attributes.FullyCum_Age30to39;
+        age40Plus = weeklyDataList[curWeek].attributes.FullyCum_Age40to49;
+        age50Plus = weeklyDataList[curWeek].attributes.FullyCum_Age50to59;
+        age60Plus = weeklyDataList[curWeek].attributes.FullyCum_Age60to69;
+        age70Plus = weeklyDataList[curWeek].attributes.FullyCum_Age70to79;
+        age80Plus = weeklyDataList[curWeek].attributes.FullyCum_80_;
+    }
+    document.getElementById("10-19").innerHTML ="<b> Fully Vaccinated Age 10-19: </b> " + age10Plus;
+    document.getElementById("20-29").innerHTML ="<b> Fully Vaccinated Age 20-29: </b> " + age20Plus;
+    document.getElementById("30-39").innerHTML ="<b> Fully Vaccinated Age 30-39: </b> " + age30Plus;
+    document.getElementById("40-49").innerHTML ="<b> Fully Vaccinated Age 40-49: </b> " + age40Plus;
+    document.getElementById("50-59").innerHTML ="<b> Fully Vaccinated Age 50-59: </b> " + age50Plus;
+    document.getElementById("60-69").innerHTML ="<b> Fully Vaccinated Age 60-69: </b> " + age60Plus;
+    document.getElementById("70-79").innerHTML ="<b> Fully Vaccinated Age 70-79: </b> " + age70Plus;
+    document.getElementById("80+").innerHTML = "<b> Fully Vaccinated Age 80+: </b>" + age80Plus;
+}
+
+var countyInfo;
+var parsedCounties;
+const countyXml = new XMLHttpRequest(),
+    link = "https://services1.arcgis.com/eNO7HHeQ3rUcBllm/arcgis/rest/services/Covid19CountyStatisticsHPSCIrelandOpenData/FeatureServer/0/query?where=1%3D1&outFields=CountyName,PopulationCensus16,IGEasting,IGNorthing,Lat,Long,UniqueGeographicIdentifier,ConfirmedCovidCases,PopulationProportionCovidCases,x,y&outSR=4326&f=json"
+countyXml.onreadystatechange = function() {
+    if (countyXml.readyState == 4  && countyXml.status == 200) {
+        console.log(countyXml.responseText);
+        parsedCounties = JSON.parse(countyXml.responseText);
+        countyInfo();
+        updateCounty();
+        getLowHigh();        
+    }    
+};    
+countyXml.open('get', link, true);    
+countyXml.send();
+    
+function countyInfo() {
+    var countyDataList = parsedCounties.features;
+    var counties = ""
+    var countyArray = [];
+    for (var i=0; i < countyDataList.length; i++) {  
+        var county = countyDataList[i].attributes.CountyName;
+        // prevents duplicates on weekends
+        // .includes was a useful feature I discovered from here https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes .
+        if(!countyArray.includes(county)) {
+            countyArray[i] = county;
+            counties += "<option>" + county + "</option>";
+        }
+    }
+    console.log(counties);
+    document.getElementById('countyDropdown').innerHTML = counties;
+    document.getElementById('countyDropdown2').innerHTML = counties;
+    document.getElementById('countyDropdown3').innerHTML = counties;
+}
+    
+function updateCounty() {
+    var countyDataList = parsedCounties.features;
+    var county1 = document.getElementById("countyDropdown").value;
+    var county2 = document.getElementById("countyDropdown2").value;
+    var county3 = document.getElementById("countyDropdown3").value;
+    var countyArray = [];
+    // the .push function was found from here https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push , this is to default display the first county from the list
+    // prevents the appearance of duplicate county tables 
+    countyArray.push(county1);
+    if (!countyArray.includes(county2))
+        countyArray.push(county2);
+    if (!countyArray.includes(county3))
+        countyArray.push(county3);
+    var display = "";
+// I orchestrated the table display similarly to how it was done in the example assignment 2 submission we were provided from lectures. I reconfigured the structure of the table by putting the headings to one column and results in the other, this was so I could demonstrate that I properly understood how to implement the table in JS 
+    for (var i=0; i < countyArray.length; i++) {
+        display += "</br> </br> <table border=\"1\" style=\"border-collapse:collapse;\">";
+        var county = countyArray[i];
+        var population = "";
+        var confirmedCovid = "";
+        var covidPerPop = "";
+        for (var j=0; j < countyDataList.length; j++) {
+            if (countyDataList[j].attributes.CountyName == county) {
+                population = countyDataList[j].attributes.PopulationCensus16;
+                console.log(population);
+                confirmedCovid = parseFloat(countyDataList[j].attributes.ConfirmedCovidCases).toFixed(2);
+                covidPerPop = parseFloat(countyDataList[j].attributes.PopulationProportionCovidCases).toFixed(2);
+                break;
+            }
+        }
+        display += "<tr><th>County: </th><td>" + county + "</td></tr>" + 
+        "<tr><th>Population: </th><td>" + population + "</td></tr>" + 
+        "<tr><th>Confirmed Covid Cases: </th><td>" + confirmedCovid + "</td></tr>" +
+        "<tr><th>Confirmed Cases Per 100,000: </th><td>" + covidPerPop + "</td></tr>";    
+
+        display += "</table>";
+    }
+    document.getElementById("tableDisplay").innerHTML = display;
+}
+    
+function getLowHigh(){
+var countyDataList = parsedCounties.features;
+var maxRate = 0;
+var minRate = 100000;
+var maxCounty;
+var minCounty;
+    for (var i=0; i < countyDataList.length; i ++) {
+        var covidCases = countyDataList[i].attributes.PopulationProportionCovidCases; 
+        if (covidCases > maxRate){
+            maxCounty = countyDataList[i].attributes.CountyName;
+            maxRate = parseFloat(covidCases).toFixed(2);
+        }
+        if (covidCases < minRate){
+            minCounty = countyDataList[i].attributes.CountyName;
+            minRate = parseFloat(covidCases).toFixed(2);
+        }   
+    }
+document.getElementById("highestCounty").innerHTML = "<b>" + "County Name: " + "</b>" + maxCounty + "<br>" + "<b>" + "Cases per 100,000 in 2021: " + "</b>" + maxRate;
+document.getElementById("lowestCounty").innerHTML = "<b>" + "County Name: " + "</b>" + minCounty + "<br>" + "<b>" + "Cases per 100,000 in 2021: " + "</b>" + minRate;
+}
+</script>   
+</body>
+</html>
